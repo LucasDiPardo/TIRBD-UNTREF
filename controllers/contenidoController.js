@@ -1,6 +1,21 @@
 // Controlador para traer todos los contenidos
-const getAllContenidos = (req, res) => {
-    res.send('Aca estan todos los contenidos')
+const { Contenido } = require("../models/contenido")
+
+
+const getAllContenidos = async(req, res) => {
+  try{
+    const db = req.app.get('db')
+    await db.authenticate()
+    await Contenido.sync()
+    
+    const contenidos = await Contenido.findAll()
+    contenidos.length > 0 ? res.status(200).json(contenidos)
+        : res.status(404).json({error: "No encontramos contenidos cargados"})
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message: "Error al obtener Contenidos"})
+  }
+    
   }
   
   const getContenidoById = (req, res) => {

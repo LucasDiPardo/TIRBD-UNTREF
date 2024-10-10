@@ -1,6 +1,19 @@
 // Controlador para traer todos los actores
-const getAllActors = (req, res) => {
-    res.send('Aca estan todos los actores')
+const { Actor } = require("../models/actor")
+
+const getAllActors = async(req, res) => {
+  try{
+    const db = req.app.get('db')
+    await db.authenticate()
+    await Actor.sync()
+    
+    const actores = await Actor.findAll()
+    actores.length > 0 ? res.status(200).json(actores)
+        : res.status(404).json({error: "No encontramos actores cargados"})
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message: "Error al obtener actores"})
+  }
   }
   
   const getActorById = (req, res) => {

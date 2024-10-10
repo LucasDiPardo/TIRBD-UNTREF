@@ -1,5 +1,5 @@
 // Model for Categoria
-const { sequelize } = require('../conexion/conexion')
+const { sequelize } = require('../conexion/database')
 const { DataTypes } = require('sequelize')
 
 const Categoria = sequelize.define(
@@ -16,7 +16,7 @@ const Categoria = sequelize.define(
     },
   },
   {
-    tableName: 'Categoria',
+    tableName: 'Categorias',
     timestamps: false,
   }
 )

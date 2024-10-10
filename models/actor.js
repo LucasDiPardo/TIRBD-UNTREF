@@ -1,5 +1,5 @@
 // Model for Actor
-const { sequelize } = require('../conexion/conexion')
+const { sequelize } = require('../conexion/database')
 const { DataTypes } = require('sequelize')
 
 const Actor = sequelize.define(
@@ -16,7 +16,7 @@ const Actor = sequelize.define(
     },
   },
   {
-    tableName: 'Actor',
+    tableName: 'Actores',
     timestamps: false,
   }
 )

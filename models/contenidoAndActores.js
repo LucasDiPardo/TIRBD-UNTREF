@@ -1,5 +1,5 @@
 const { FOREIGNKEYS } = require('sequelize/lib/query-types')
-const { sequelize } = require('../conexion/conexion')
+const { sequelize } = require('../conexion/database')
 const { DataTypes } = require('sequelize')
 
 const ContenidoActorView = sequelize.define(

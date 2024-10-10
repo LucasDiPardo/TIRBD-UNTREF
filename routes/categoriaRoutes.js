@@ -11,4 +11,4 @@ router.get('/:id', categoriaController.getCategoriaById)
 // POST a /categoria para crear una categoria
 router.post('/', categoriaController.createCategoria)
 
-module.exports = router
+module.exports = router;

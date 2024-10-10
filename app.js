@@ -1,17 +1,51 @@
+/*
+const {Contenido} = require ('./models/contenido')
+const {ContenidoActorView} = require ('./models/contenidoAndActores')
+const {Actor} = require ('./models/actor')
+const {Categoria} = require ('./models/categoria')
+const {Genero} = require ('./models/genero')
+*/
+
 const express = require('express');
+const {Sequelize} = require ('sequelize')
+
 const app = express();
+
+
 const contenidoRoutes = require('./routes/contenidoRoutes');
-const db = require('./conexion/database');
+const actorRoutes = require('./routes/actorRoutes');
+const categoriaRoutes = require('./routes/categoriaRoutes');
+const generoRoutes = require('./routes/generoRoutes');
+const { sequelize } = require('./conexion/database');
+
+
 
 // Middlewares
 app.use(express.json());
-app.use('/contenido', contenidoRoutes);
+
+//enrutador de Contenidos
+app.use('/contenido', contenidoRoutes)
+//enrutador de Categorias
+app.use('/categorias', categoriaRoutes)
+//enrutador de Generos
+app.use('/generos', generoRoutes)
+//enrutador de Actores
+app.use('/actores', actorRoutes)
+
+
+
+
+app.get('/', (req, res) => { res.status(200).end('¡Bienvenido a la API de Series y Peliculas!') })
+
+
+app.set('db', sequelize)
 
 // Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
 
 
