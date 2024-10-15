@@ -1,7 +1,7 @@
 // Model for Contenido
 const { sequelize } = require('../conexion/database')
 const { DataTypes } = require('sequelize')
-//const { Categoria } = require('./categorias')
+
 
 const Contenido = sequelize.define(
   'Contenido',
@@ -47,6 +47,6 @@ const Contenido = sequelize.define(
   }
 )
 
-//Contenido.belongsTo(Categoria, { foreignKey: "categoria_id"})
+
 
 module.exports = { Contenido }

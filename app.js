@@ -1,205 +1,40 @@
-/*
-const {Contenido} = require ('./models/contenido')
-const {ContenidoActorView} = require ('./models/contenidoAndActores')
-const {Actor} = require ('./models/actor')
-const {Categoria} = require ('./models/categoria')
-const {Genero} = require ('./models/genero')
-*/
-
 const express = require('express');
-const {Sequelize} = require ('sequelize')
-
-const app = express();
-
-
+const { sequelize } = require('./conexion/database');
 const contenidoRoutes = require('./routes/contenidoRoutes');
 const actorRoutes = require('./routes/actorRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
 const generoRoutes = require('./routes/generoRoutes');
-const { sequelize } = require('./conexion/database');
 
-
+const app = express();
 
 // Middlewares
 app.use(express.json());
 
-//enrutador de Contenidos
-app.use('/contenido', contenidoRoutes)
-//enrutador de Categorias
-app.use('/categorias', categoriaRoutes)
-//enrutador de Generos
-app.use('/generos', generoRoutes)
-//enrutador de Actores
-app.use('/actores', actorRoutes)
-
-
-
-
-app.get('/', (req, res) => { res.status(200).end('¡Bienvenido a la API de Series y Peliculas!') })
-
-
-app.set('db', sequelize)
-
-// Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.use(async (req, res, next) => {
+  try {
+    await sequelize.authenticate();
+    console.log('Conexión establecida con éxito');
+    // sincronizar los modelos si es necesario
+    next();
+  } catch (error) {
+    res.status(500).json({ error: 'Error en el servidor', description: error.message });
+  }
 });
 
-
-
-
-
-
-/*
-
-const { Actor } = require('./src/modelos/actor')
-const { Categoria } = require('./src/modelos/categorias')
-const { ContenidoActorView } = require('./src/modelos/contenido_actor')
-const { Contenido } = require('./src/modelos/contenido')
-const { Genero } = require('./src/modelos/generos')
-
-const { sequelize } = require('./src/conexion/conexion')
-const { Op } = require('sequelize')
-const express = require('express')
-const app = express()
-const port = 3001
-
-app.use(express.json())
-app.use(async (req,res,next) => {
-  try {
-    await sequelize.authenticate()
-    console.log('Conexión establecida con exito ! =)')
-    await Actor.sync()
-    await Categoria.sync()
-    await ContenidoActorView.sync()
-    await Contenido.sync()
-    await Genero.sync()
-    next()
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
+// enrutadores
+app.use('/contenido', contenidoRoutes);
+app.use('/categorias', categoriaRoutes);
+app.use('/generos', generoRoutes);
+app.use('/actores', actorRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+  res.status(200).send('¡Bienvenido a la API de Series y Peliculas!');
+});
 
-app.get('/categorias', async (req, res) => {
-    try {
-        const categorias = await Categoria.findAll()
-        categorias.length > 0 ? res.status(200).json(categorias)
-        : res.status(404).json({error: "No encontramos categorias cargadas"})
-    } catch (error) {
-        res.status(500).json({error: `Error en el servidor: `,description: error.message})
-    } 
-})
-            
-/*
-app.get('/productos', async (req, res) => {
-  try {
-    const products = await Product.findAll(
-      {order: [['CategoryID','ASC'],['productName','DESC']]}
-    )
-    products.length > 0 ? res.status(200).json(products)
-    : res.status(404).json({error: "No encontramos productos cargados"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
+app.set('db', sequelize);
 
-app.get('/productos/:productID', async (req, res) => {
-  try {
-    const { productID } = req.params
-    const product = await Product.findByPk(productID)
-    product ? res.json(product)
-    : res.status(404).json({error: "Producto no encontrado"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
-
-app.get('/productos/nombre/:productName', async (req, res) => {
-  try {
-    const { productName } = req.params
-    const product = await Product.findOne({where: {productName}})
-    product ? res.json(product)
-    : res.status(404).json({error: "Producto no encontrado"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
-
-app.get('/productos/categoria/:CategoryID', async (req, res) => {
-  try {
-    const { CategoryID } = req.params
-    const products = await Product.findAll({where: {CategoryID}})
-    products ? res.json(products)
-    : res.status(404).json({error: "Producto no encontrado"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
-
-app.get('/productos/buscar/:query', async (req, res) => {
-  try {
-    const { query } = req.params
-    const product = await Product.findAll({where: 
-      {productName: {
-        [Op.like]: `%${query}%`
-      }}
-    })
-    product ? res.json(product)
-    : res.status(404).json({error: "Producto no encontrado"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
-
-app.get('/productos/importeMayor/:query', async (req, res) => {
-  try {
-    const { query } = req.params
-    const product = await Product.findAll({
-      where: 
-        {UnitPrice: {
-          [Op.gt]: query
-        }},
-      order: [['UnitPrice', 'ASC']]
-    })
-    product ? res.json(product)
-    : res.status(404).json({error: "Producto no encontrado"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
-
-app.get('/productos/:campo/:valor', async (req, res) => {
-  try {
-    const { campo, valor } = req.params
-    const query = {[campo]: valor}
-    const product = await Product.findOne({where: {query}})
-    product ? res.json(product)
-    : res.status(404).json({error: "Producto no encontrado"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
-
-app.get('/empleados', async (req, res) => {
-  try {
-    const employees = await Employee.findAll()
-    employees.length > 0 ? res.status(200).json(employees)
-    : res.status(404).json({error: "No encontramos empleados cargados"})
-  } catch (error) {
-    res.status(500).json({error: `Error en el servidor: `,description: error.message})
-  } 
-})
-
-
-
-app.listen(port, () => {
-  console.log(`Example app listening on http://localhost:${port}`)
-})
-
-*/
-    
+// server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server funcionando en el puerto ${PORT}`);
+});
