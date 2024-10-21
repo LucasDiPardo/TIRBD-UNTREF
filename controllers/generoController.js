@@ -16,9 +16,17 @@ const getAllGeneros = async (req, res) => {
     }
   }
   
-  const getGeneroById = (req, res) => {
-    const generoId = req.params.id
-    res.send(`Aca esta el genero que solicitaste: ${generoId}`)
+  const getGeneroById = async(req, res) => {
+    try {
+      const generoID = req.params.id;
+      const genero = await Genero.findByPk(generoID);
+      genero
+        ? res.status(200).json(genero)
+        : res.status(404).json({ error: "Genero no encontrado" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error al obtener Genero" });
+    }
   }
   
   const createGenero = (req, res) => {

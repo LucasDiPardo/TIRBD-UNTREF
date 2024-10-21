@@ -17,13 +17,33 @@ const getAllCategories = async (req, res) => {
   }
   }
   
-  const getCategoriaById = (req, res) => {
-    const categoriaId = req.params.id
-    res.send(`Aca esta la categoria que solicitaste: ${categoriaId}`)
+  const getCategoriaById = async(req, res) => {
+    try {
+      const categoriaID = req.params.id;
+      const categoria = await Categoria.findByPk(categoriaID);
+      categoria
+        ? res.status(200).json(categoria)
+        : res.status(404).json({ error: "Categoria no encontrado" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error al obtener Categoria" });
+    }
   }
   
+  const buscarCategoria = async (req, res) => {
+    try {
+      const nombreABuscar = req.params.nombre;
+      const categoria = await Categoria.findOne({ where: { nombre: nombreABuscar } });
+      categoria ? res.status(200).json(categoria)
+        : res.status(404).json({ error: "Categoria no encontrado" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error al obtener la Categoria buscada" });
+    }
+  };
+
   const createCategoria = (req, res) => {
     res.send('Creando una nueva categoria')
   }
   
-  module.exports = { getAllCategories, createCategoria, getCategoriaById }
+  module.exports = { getAllCategories, createCategoria, getCategoriaById, buscarCategoria }

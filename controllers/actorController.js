@@ -16,9 +16,17 @@ const getAllActors = async(req, res) => {
   }
   }
   
-  const getActorById = (req, res) => {
-    const userId = req.params.id
-    res.send(`Aca esta el usuario que solicitaste: ${userId}`)
+  const getActorById = async(req, res) => {
+    try {
+      const userID = req.params.id;
+      const actor = await Actor.findByPk(userID);
+      actor
+        ? res.status(200).json(actor)
+        : res.status(404).json({ error: "Actor no encontrado" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error al obtener Actor" });
+    }
   }
   
   const createActor = (req, res) => {
