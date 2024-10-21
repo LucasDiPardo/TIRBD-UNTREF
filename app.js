@@ -4,6 +4,7 @@ const contenidoRoutes = require('./routes/contenidoRoutes');
 const actorRoutes = require('./routes/actorRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
 const generoRoutes = require('./routes/generoRoutes');
+const models = require ('./models/')
 
 const app = express();
 

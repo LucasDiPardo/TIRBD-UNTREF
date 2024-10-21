@@ -1,7 +1,7 @@
-// Model for Contenido
+
 const { sequelize } = require('../conexion/database')
 const { DataTypes } = require('sequelize')
-
+const {Genero} = require('../models/genero')
 
 const Contenido = sequelize.define(
   'Contenido',
@@ -36,9 +36,9 @@ const Contenido = sequelize.define(
         allowNull: false,
     },
     genero_id: {
-        type: DataTypes.STRING(60),
+        type: DataTypes.INTEGER,
         allowNull: true,
-        default: 'N/A'
+        default: null,
     },
   },
   {
@@ -47,6 +47,6 @@ const Contenido = sequelize.define(
   }
 )
 
-
+Contenido.belongsTo(Genero, { foreignKey: 'id' });
 
 module.exports = { Contenido }
