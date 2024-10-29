@@ -1,7 +1,9 @@
 const { Contenido } = require("../models/contenido");
-const {Genero} = require ("../models/genero")
-const {Op} = require('sequelize')
+const { Genero } = require("../models/genero");
+const { Categoria } = require("../models/categoria");
+const { Op } = require("sequelize");
 
+//Obtener todos los Contenidos
 const getAllContenidos = async (req, res) => {
   try {
     await Contenido.sync();
@@ -15,6 +17,7 @@ const getAllContenidos = async (req, res) => {
   }
 };
 
+//Obtener un Contenido por ID
 const getContenidoById = async (req, res) => {
   try {
     const contenidoID = req.params.id;
@@ -28,59 +31,96 @@ const getContenidoById = async (req, res) => {
   }
 };
 
+//Filtrar contenidos - Titulo, Genero o Categoria
 const buscarContenido = async (req, res) => {
   try {
-    const { titulo } = req.query;
-    if (!titulo) {
-      return res.status(400).json({ error: "El título es requerido" });
-    }
-    const contenido = await Contenido.findAll({
-      where: {
-        titulo: {
-          [Op.like]: `%${titulo}%`
-        }
-      }
-    });
+    const { titulo, genero, categoria } = req.query;
 
-    contenido.length > 0
-      ? res.status(200).json(contenido)
-      : res.status(404).json({ error: "Contenido no encontrado" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al obtener el Contenido buscado" });
-  }
-};
+    // Crear objeto de filtro dinámico
+    const whereContenido = {};
+    const whereGenero = {};
+    const whereCategoria = {};
 
-const buscarContenidoPorGenero = async (req, res) => {
-  try {
-    const { nombreGenero } = req.query;
-    if (!nombreGenero) {
-      return res.status(400).json({ error: 'El nombre del género es requerido' });
+    // Agregar filtros solo si están presentes
+    if (titulo) {
+      whereContenido.titulo = { [Op.like]: `%${titulo}%` };
     }
 
-    const genero = await Genero.findOne({ where: { nombre: nombreGenero } });
-    if (!genero) {
-      return res.status(404).json({ error: 'Género no encontrado' });
+    if (genero) {
+      whereGenero.nombre = { [Op.like]: `%${genero}%` };
     }
-    console.log(genero)
 
+    if (categoria) {
+      whereCategoria.nombre = { [Op.like]: `%${categoria}%` };
+    }
+
+    // Buscar contenidos con los filtros aplicados
     const contenidos = await Contenido.findAll({
-      where: { genero_id: genero.id },
-      include: [{ model: Genero }]
+      where: whereContenido,
+      include: [
+        {
+          model: Genero,
+          where: whereGenero,
+          attributes: ["nombre"],
+        },
+        {
+          model: Categoria,
+          where: whereCategoria,
+          attributes: ["nombre"],
+        },
+      ],
     });
 
     contenidos.length > 0
       ? res.status(200).json(contenidos)
-      : res.status(404).json({ error: 'No se encontraron contenidos para este género' });
+      : res.status(404).json({ error: "Contenido no encontrado" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error al obtener los contenidos por género' });
+    res.status(500).json({ message: "Error al obtener el contenido buscado" });
   }
 };
 
+function validar(datos) {
+  //validar que el contenido no esté vacío
+  const {
+    poster,
+    titulo,
+    resumen,
+    temporadas,
+    trailer,
+    categoria_id,
+    genero_id,
+  } = datos;
+
+  // Validación de campos requeridos
+  if (!poster) return "El campo 'poster' es requerido.";
+  if (!titulo) return "El campo 'titulo' es requerido.";
+  if (!resumen) return "El campo 'resumen' es requerido.";
+  if (temporadas === undefined) return "El campo 'temporadas' es requerido.";
+  if (!trailer) return "El campo 'trailer' es requerido.";
+  if (!categoria_id) return "El campo 'categoria_id' es requerido.";
+  if (!genero_id) return "El campo 'genero_id' es requerido.";
+}
+
 const createContenido = async (req, res) => {
   try {
-    const { poster, titulo, resumen, temporadas, trailer, categoria_id, genero_id } = req.body;
+    const {
+      poster,
+      titulo,
+      resumen,
+      temporadas,
+      trailer,
+      categoria_id,
+      genero_id,
+    } = req.body;
+
+    const error= validar(req.body);
+
+    if (!!error){
+      return res.status(400).json({ error });
+    }
+    
+
     const nuevoContenido = await Contenido.create({
       poster,
       titulo,
@@ -97,11 +137,12 @@ const createContenido = async (req, res) => {
   }
 };
 
+
+//actualizar contenido desde id
 const updateContenido = async (req, res) => {
   try {
     const { id } = req.params;
-    const { poster, titulo, resumen, temporadas, trailer, categoria_id, genero_id } = req.body;
-    const [updated] = await Contenido.update({
+    const {
       poster,
       titulo,
       resumen,
@@ -109,9 +150,22 @@ const updateContenido = async (req, res) => {
       trailer,
       categoria_id,
       genero_id,
-    }, {
-      where: { id },
-    });
+    } = req.body;
+    
+    const [updated] = await Contenido.update(
+      {
+        poster,
+        titulo,
+        resumen,
+        temporadas,
+        trailer,
+        categoria_id,
+        genero_id,
+      },
+      {
+        where: { id },
+      }
+    );
 
     if (updated) {
       const updatedContenido = await Contenido.findByPk(id);
@@ -125,6 +179,8 @@ const updateContenido = async (req, res) => {
   }
 };
 
+
+//Eliminar contenido desde una id
 const deleteContenido = async (req, res) => {
   try {
     const { id } = req.params;
@@ -132,13 +188,26 @@ const deleteContenido = async (req, res) => {
       where: { id },
     });
 
-    deleted
-      ? res.status(204).json()
-      : res.status(404).json({ error: "Contenido no encontrado" });
+    if (deleted) {
+      res.status(200).json({ message: "Contenido eliminado satisfactoriamente." });
+    } else {
+      res.status(404).json({ error: "Contenido no encontrado" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al eliminar Contenido" });
   }
 };
 
-module.exports = { getAllContenidos, getContenidoById, createContenido, updateContenido, deleteContenido, buscarContenido, buscarContenidoPorGenero };
+
+
+
+
+module.exports = {
+  getAllContenidos,
+  getContenidoById,
+  createContenido,
+  updateContenido,
+  deleteContenido,
+  buscarContenido,
+};

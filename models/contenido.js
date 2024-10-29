@@ -1,52 +1,52 @@
-
-const { sequelize } = require('../conexion/database')
-const { DataTypes } = require('sequelize')
-const {Genero} = require('../models/genero')
+const { sequelize } = require("../conexion/database");
+const { DataTypes } = require("sequelize");
+const { Genero } = require("../models/genero");
+const {Categoria} = require("../models/categoria")
 
 const Contenido = sequelize.define(
-  'Contenido',
+  "Contenido",
   {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
     poster: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
+      type: DataTypes.STRING(255),
+      allowNull: false,
     },
     titulo: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
+      type: DataTypes.STRING(255),
+      allowNull: false,
     },
     resumen: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     temporadas: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     trailer: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
+      type: DataTypes.STRING(255),
+      allowNull: false,
     },
     categoria_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     genero_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        default: null,
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
   },
   {
-    tableName: 'Contenido',
+    tableName: "Contenido",
     timestamps: false,
   }
-)
+);
 
-Contenido.belongsTo(Genero, { foreignKey: 'id' });
+Contenido.belongsTo(Genero, { foreignKey: "genero_id" });
+Contenido.belongsTo(Categoria, { foreignKey: "categoria_id" });
 
-module.exports = { Contenido }
+module.exports = { Contenido };

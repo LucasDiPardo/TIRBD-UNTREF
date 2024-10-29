@@ -1,6 +1,5 @@
 const { sequelize } = require('../conexion/database');
 const { DataTypes } = require('sequelize');
-const {Contenido} = require('../models/contenido')
 
 const Genero = sequelize.define(
   'Genero',
@@ -20,7 +19,5 @@ const Genero = sequelize.define(
     timestamps: false,
   }
 );
-
-Genero.hasMany(Contenido, { foreignKey: 'id' });
 
 module.exports = { Genero }
