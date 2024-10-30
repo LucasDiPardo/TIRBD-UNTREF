@@ -1,4 +1,3 @@
-// Model for Categoria
 const { sequelize } = require('../conexion/database')
 const { DataTypes } = require('sequelize')
 

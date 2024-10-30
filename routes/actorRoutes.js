@@ -103,7 +103,7 @@ router.get('/:id', actorController.getActorById)
  *             example:
  *               message: "Error al crear actor"
  */
-router.post('/', actorController.createActor)
+router.post('/createActor', actorController.createActor)
 
 
 module.exports = router

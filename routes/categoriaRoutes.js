@@ -138,6 +138,6 @@ router.get("/buscarCategoria/:nombre", categoriaController.buscarCategoria);
  *             example:
  *               message: "Error al crear categoría"
  */
-router.post("/", categoriaController.createCategoria);
+router.post("/createCategoria", categoriaController.createCategoria);
 
 module.exports = router;

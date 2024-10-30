@@ -102,6 +102,6 @@ router.get("/:id", generoController.getGeneroById);
  *             example:
  *               message: "Error al crear género"
  */
-router.post("/", generoController.createGenero);
+router.post("/createGenero", generoController.createGenero);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const { Actor } = require("../models/actor");
 const { Categoria } = require("../models/categoria");
 const { Contenido } = require("../models/contenido");
 const { Genero } = require("../models/genero");
-const { ContenidoActorView } = require("../models/contenidoAndActores");
+const { ContenidoActorView } = require("../models/contenidoActorView");
 const { sequelize } = require("../conexion/database");
 
 async function readJsonFile(filePath) {
@@ -20,21 +20,18 @@ async function processData(jsonData) {
   try {
     await sequelize.transaction(async (t) => {
       for (const item of jsonData) {
-        // Process Categoria
         const [categoria] = await Categoria.findOrCreate({
           where: { nombre: item.categoria },
           defaults: { nombre: item.categoria },
           transaction: t,
         });
 
-        // Process Genero (using gen field as primary genre)
         const [genero] = await Genero.findOrCreate({
           where: { nombre: item.gen },
           defaults: { nombre: item.gen },
           transaction: t,
         });
 
-        // Create Contenido
         const contenido = await Contenido.create(
           {
             poster: item.poster,
@@ -50,7 +47,6 @@ async function processData(jsonData) {
           { transaction: t }
         );
 
-        // Process Actors
         const actorNames = item.reparto.split(", ");
         for (const actorName of actorNames) {
           const [actor] = await Actor.findOrCreate({
@@ -59,7 +55,6 @@ async function processData(jsonData) {
             transaction: t,
           });
 
-          // Create relationship in ContenidoActorView
           await ContenidoActorView.create(
             {
               contenido_id: contenido.id,
@@ -71,44 +66,40 @@ async function processData(jsonData) {
       }
     });
 
-    console.log("Data import completed successfully!");
+    console.log("Importacion de datos Completada!");
   } catch (error) {
-    console.error("Error processing data:", error);
+    console.error("Error procesando datos:", error);
     throw error;
   }
 }
 
 async function importContentFromFile(filePath) {
   try {
-    console.log("Starting import process...");
+    console.log("Comenzando a importar..");
 
-    // Connect to database
+
     await sequelize.authenticate();
-    console.log("Database connection established.");
+    console.log("DB Conexion establecida.");
 
-    // Read and parse the file
     const jsonData = await readJsonFile(filePath);
     console.log(`Read ${jsonData.length} items from file.`);
 
-    // Process the data
     await processData(jsonData);
   } catch (error) {
-    console.error("Import failed:", error);
+    console.error("Fallo la importacion:", error);
     throw error;
   } finally {
     await sequelize.close();
   }
 }
 
-// Export the main function
 module.exports = {
   importContentFromFile,
 };
 
-// Example usage
 if (require.main === module) {
-  const filePath = "./json/trailerflix.json"; // Replace with your actual file path
+  const filePath = "./json/trailerflix.json"; 
   importContentFromFile(filePath)
-    .then(() => console.log("Import process completed"))
+    .then(() => console.log("Proceso de importar Completado"))
     .catch(console.error);
 }

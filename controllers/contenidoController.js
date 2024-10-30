@@ -1,13 +1,21 @@
 const { Contenido } = require("../models/contenido");
 const { Genero } = require("../models/genero");
 const { Categoria } = require("../models/categoria");
+const { Actor } = require("../models/actor");
+const {sequelize} = require("../conexion/database");
 const { Op } = require("sequelize");
 
-//Obtener todos los Contenidos
+
 const getAllContenidos = async (req, res) => {
   try {
     await Contenido.sync();
-    const contenidos = await Contenido.findAll();
+    const contenidos = await Contenido.findAll({
+      include: [
+        { model: Genero, attributes: ["nombre"] },
+        { model: Categoria, attributes: ["nombre"] },
+        { model: Actor, attributes: ["nombre"], through: { attributes: [] } },
+      ],
+    });
     contenidos.length > 0
       ? res.status(200).json(contenidos)
       : res.status(404).json({ error: "No encontramos contenidos cargados" });
@@ -17,11 +25,17 @@ const getAllContenidos = async (req, res) => {
   }
 };
 
-//Obtener un Contenido por ID
+
 const getContenidoById = async (req, res) => {
   try {
     const contenidoID = req.params.id;
-    const contenido = await Contenido.findByPk(contenidoID);
+    const contenido = await Contenido.findByPk(contenidoID, {
+      include: [
+        { model: Genero, attributes: ["nombre"] },
+        { model: Categoria, attributes: ["nombre"] },
+        { model: Actor, attributes: ["nombre"], through: { attributes: [] } },
+      ],
+    });
     contenido
       ? res.status(200).json(contenido)
       : res.status(404).json({ error: "Contenido no encontrado" });
@@ -31,7 +45,7 @@ const getContenidoById = async (req, res) => {
   }
 };
 
-//Filtrar contenidos - Titulo, Genero o Categoria
+
 const buscarContenido = async (req, res) => {
   try {
     const { titulo, genero, categoria } = req.query;
@@ -68,6 +82,7 @@ const buscarContenido = async (req, res) => {
           where: whereCategoria,
           attributes: ["nombre"],
         },
+        { model: Actor, attributes: ["nombre"], through: { attributes: [] } },
       ],
     });
 
@@ -81,7 +96,6 @@ const buscarContenido = async (req, res) => {
 };
 
 function validar(datos) {
-  //validar que el contenido no esté vacío
   const {
     poster,
     titulo,
@@ -92,7 +106,6 @@ function validar(datos) {
     genero_id,
   } = datos;
 
-  // Validación de campos requeridos
   if (!poster) return "El campo 'poster' es requerido.";
   if (!titulo) return "El campo 'titulo' es requerido.";
   if (!resumen) return "El campo 'resumen' es requerido.";
@@ -103,6 +116,7 @@ function validar(datos) {
 }
 
 const createContenido = async (req, res) => {
+  const t = await sequelize.transaction(); // Iniciar una transacción
   try {
     const {
       poster,
@@ -112,33 +126,64 @@ const createContenido = async (req, res) => {
       trailer,
       categoria_id,
       genero_id,
+      actores_id,
     } = req.body;
 
-    const error= validar(req.body);
+    const error = validar(req.body);
 
-    if (!!error){
+    if (error) {
+      await t.rollback();
       return res.status(400).json({ error });
     }
-    
 
-    const nuevoContenido = await Contenido.create({
-      poster,
-      titulo,
-      resumen,
-      temporadas,
-      trailer,
-      categoria_id,
-      genero_id,
+    const nuevoContenido = await Contenido.create(
+      {
+        poster,
+        titulo,
+        resumen,
+        temporadas,
+        trailer,
+        categoria_id,
+        genero_id,
+      },
+      { transaction: t }
+    );
+
+
+    if (actores_id && actores_id.length > 0) {
+      const actoresExistentes = await Actor.findAll({
+        where: { id: actores_id },
+        transaction: t,
+      });
+
+      if (actoresExistentes.length !== actores_id.length) {
+        await t.rollback(); 
+        return res.status(400).json({ error: "Uno o más actores no existen" });
+      }
+
+      await nuevoContenido.addActors(actoresExistentes, { transaction: t });
+    }
+
+    await t.commit(); 
+
+    
+    const contenidoCreado = await Contenido.findByPk(nuevoContenido.id, {
+      include: [
+        { model: Genero, attributes: ["nombre"] },
+        { model: Categoria, attributes: ["nombre"] },
+        { model: Actor, attributes: ["nombre"], through: { attributes: [] } },
+      ],
     });
-    res.status(201).json(nuevoContenido);
+
+    res.status(201).json(contenidoCreado);
   } catch (error) {
+    await t.rollback(); 
     console.error(error);
     res.status(500).json({ message: "Error al crear Contenido" });
   }
 };
 
 
-//actualizar contenido desde id
 const updateContenido = async (req, res) => {
   try {
     const { id } = req.params;
@@ -151,7 +196,7 @@ const updateContenido = async (req, res) => {
       categoria_id,
       genero_id,
     } = req.body;
-    
+
     const [updated] = await Contenido.update(
       {
         poster,
@@ -168,7 +213,13 @@ const updateContenido = async (req, res) => {
     );
 
     if (updated) {
-      const updatedContenido = await Contenido.findByPk(id);
+      const updatedContenido = await Contenido.findByPk(id, {
+        include: [
+          { model: Genero, attributes: ["nombre"] },
+          { model: Categoria, attributes: ["nombre"] },
+          { model: Actor, attributes: ["nombre"], through: { attributes: [] } },
+        ],
+      });
       res.status(200).json(updatedContenido);
     } else {
       res.status(404).json({ error: "Contenido no encontrado" });
@@ -180,7 +231,6 @@ const updateContenido = async (req, res) => {
 };
 
 
-//Eliminar contenido desde una id
 const deleteContenido = async (req, res) => {
   try {
     const { id } = req.params;
@@ -189,7 +239,9 @@ const deleteContenido = async (req, res) => {
     });
 
     if (deleted) {
-      res.status(200).json({ message: "Contenido eliminado satisfactoriamente." });
+      res
+        .status(200)
+        .json({ message: "Contenido eliminado satisfactoriamente." });
     } else {
       res.status(404).json({ error: "Contenido no encontrado" });
     }
@@ -198,10 +250,6 @@ const deleteContenido = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar Contenido" });
   }
 };
-
-
-
-
 
 module.exports = {
   getAllContenidos,

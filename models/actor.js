@@ -1,4 +1,3 @@
-// Model for Actor
 const { sequelize } = require('../conexion/database')
 const { DataTypes } = require('sequelize')
 

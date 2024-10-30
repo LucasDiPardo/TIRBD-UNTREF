@@ -1,4 +1,4 @@
-// Controlador para traer todos los actores
+
 const { Actor } = require("../models/actor")
 
 const getAllActors = async(req, res) => {
@@ -29,8 +29,21 @@ const getAllActors = async(req, res) => {
     }
   }
   
-  const createActor = (req, res) => {
-    res.send('Creando un nuevo usuario...')
+  const createActor = async(req, res) => {
+    try{
+      const {nombre} = req.body
+      const actor = await Actor.findOne({where: {nombre}})
+      if(actor){
+        return res.status(400).json({error: "Actor ya existe"})
+      }
+      const nuevoActor = await Actor.create({nombre})
+      res.status(201).json(nuevoActor);
+
+    }catch(error){
+          console.error(error);
+          res.status(500).json({ message: "Error al crear Actor" });
+  
+    }
   }
   
   module.exports = { getAllActors, createActor, getActorById }

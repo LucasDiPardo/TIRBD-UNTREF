@@ -52,6 +52,8 @@ const contenidoController = require("../controllers/contenidoController");
  */
 router.get("/buscarContenido", contenidoController.buscarContenido);
 
+
+
 // GET a / para traer todos los contenidos
 /**
  * @swagger

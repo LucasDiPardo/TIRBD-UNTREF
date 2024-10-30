@@ -1,4 +1,3 @@
-// Controlador para traer todos los generos
 const { Genero } = require("../models/genero")
 
 const getAllGeneros = async (req, res) => {
@@ -29,8 +28,19 @@ const getAllGeneros = async (req, res) => {
     }
   }
   
-  const createGenero = (req, res) => {
-    res.send('Creando una nuevo genero')
+  const createGenero = async (req, res) => {
+    try {
+    const { nombre } = req.body;
+    const genero = await Genero.findOne({ where: { nombre } });
+    if (genero) {
+      return res.status(400).json({ error: "Genero ya existe" });
+    }
+    const nuevoGenero = await Genero.create({ nombre });
+    res.status(201).json(nuevoGenero);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al crear Genero" });
+  }
   }
   
   module.exports = { getAllGeneros, createGenero, getGeneroById }

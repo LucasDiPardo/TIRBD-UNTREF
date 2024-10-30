@@ -7,8 +7,7 @@ const swaggerOptions = {
     info: {
       title: "API de Contenidos",
       version: "1.0.0",
-      description:
-        "Documentación generada con Swagger para la API de Series y Peliculas",
+      description: "Documentación generada con Swagger para la API de Series y Peliculas",
     },
     servers: [
       {
@@ -108,6 +107,12 @@ const swaggerOptions = {
               description: "ID del género al que pertenece el contenido",
               example: 1,
             },
+            actores: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/Actor"
+              }
+            }
           },
           required: [
             "poster",
@@ -127,18 +132,18 @@ const swaggerOptions = {
               description: "ID único de la relación entre contenido y actor",
               example: 1,
             },
-            contenidoID: {
+            contenido_id: {
               type: "integer",
               description: "ID del contenido",
               example: 1,
             },
-            actorID: {
+            actor_id: {
               type: "integer",
               description: "ID del actor",
               example: 1,
             },
           },
-          required: ["contenidoID", "actorID"],
+          required: ["contenido_id", "actor_id"],
         },
       },
     },
