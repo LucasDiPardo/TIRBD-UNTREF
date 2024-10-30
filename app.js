@@ -12,7 +12,7 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(bodyParser.json())
+//app.use(bodyParser.json())
 
 // Swagger Config
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
