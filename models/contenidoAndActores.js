@@ -13,22 +13,25 @@ const ContenidoActorView = sequelize.define(
         primaryKey: true,
         autoIncrement: true,
     },
-    contenidoID: {
+    contenido_id: {
       type: DataTypes.INTEGER,
       FOREIGNKEYS: true,
     },
-    actorID: {
+    actor_id: {
       type: DataTypes.INTEGER,
       FOREIGNKEYS: true,
     },
   },
   {
-    tableName: 'ContenidoActorView',
+    tableName: 'contenido_actor',
     timestamps: false,
   }
 )
 
-Contenido.belongsToMany(Actor, { through: Actor, foreignKey: 'id' })
-Actor.belongsToMany(Contenido, { through: Contenido, foreignKey: 'id' })
+Contenido.belongsToMany(Actor, { through: ContenidoActorView, foreignKey: 'contenido_id' })
+Actor.belongsToMany(Contenido, {
+  through: ContenidoActorView,
+  foreignKey: "actor_id",
+});
 
 module.exports = { ContenidoActorView }

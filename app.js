@@ -4,12 +4,19 @@ const contenidoRoutes = require('./routes/contenidoRoutes');
 const actorRoutes = require('./routes/actorRoutes');
 const categoriaRoutes = require('./routes/categoriaRoutes');
 const generoRoutes = require('./routes/generoRoutes');
-//const models = require ('./models/')
+const { swaggerUi, swaggerDocs } = require("./utils/swagger.config");
+const bodyParser = require("body-parser");
 
 const app = express();
 
+
 // Middlewares
 app.use(express.json());
+app.use(bodyParser.json())
+
+// Swagger Config
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
 
 app.use(async (req, res, next) => {
   try {
@@ -27,7 +34,6 @@ app.use('/contenido', contenidoRoutes);
 app.use('/categorias', categoriaRoutes);
 app.use('/generos', generoRoutes);
 app.use('/actores', actorRoutes);
-
 app.get('/', (req, res) => {
   res.status(200).send('¡Bienvenido a la API de Series y Peliculas!');
 });

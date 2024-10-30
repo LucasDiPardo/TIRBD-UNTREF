@@ -1,0 +1,62 @@
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS trailerflix;
+USE trailerflix;
+
+-- Eliminar tablas si existen
+DROP TABLE IF EXISTS Contenido_Actor;
+DROP TABLE IF EXISTS Contenido;
+DROP TABLE IF EXISTS Actores;
+DROP TABLE IF EXISTS Generos;
+DROP TABLE IF EXISTS Categorias;
+
+-- Crear la tabla de categorías
+CREATE TABLE Categorias (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
+);
+
+-- Crear la tabla de géneros
+CREATE TABLE Generos (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
+);
+
+-- Crear la tabla de actores
+CREATE TABLE Actores (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
+);
+
+-- Crear la tabla de contenido
+CREATE TABLE Contenido (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    poster VARCHAR(255) NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    resumen TEXT NOT NULL,
+    temporadas INT NOT NULL,
+    trailer VARCHAR(255) NOT NULL,
+    categoria_id BIGINT UNSIGNED NOT NULL,
+    genero_id BIGINT UNSIGNED NOT NULL,
+    FOREIGN KEY (categoria_id) REFERENCES Categorias(id),
+    FOREIGN KEY (genero_id) REFERENCES Generos(id)
+);
+
+-- Crear la tabla de relación contenido-actor
+CREATE TABLE Contenido_Actor (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    actor_id BIGINT UNSIGNED NOT NULL,
+    contenido_id BIGINT UNSIGNED NOT NULL,
+    FOREIGN KEY (actor_id) REFERENCES Actores(id),
+    FOREIGN KEY (contenido_id) REFERENCES Contenido(id)
+);
+
+-- Crear índices para optimizar las consultas
+ALTER TABLE Contenido_Actor ADD INDEX contenido_actor_actor_id_index (actor_id);
+ALTER TABLE Contenido_Actor ADD INDEX contenido_actor_contenido_id_index (contenido_id);
+ALTER TABLE Contenido ADD INDEX contenido_categoria_id_index (categoria_id);
+ALTER TABLE Contenido ADD INDEX contenido_genero_id_index (genero_id);
+
+-- Asegurarse de que las tablas de categorías y géneros tienen índices en los campos de nombre
+ALTER TABLE Categorias ADD INDEX categorias_nombre_index (nombre);
+ALTER TABLE Generos ADD INDEX generos_nombre_index (nombre);
+ALTER TABLE Actores ADD INDEX actores_nombre_index (nombre);
