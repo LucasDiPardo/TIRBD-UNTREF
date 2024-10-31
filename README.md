@@ -1,77 +1,98 @@
-# Proyecto Integrador: CRUD con Node.js y MySQL
+# Trabajo Integrador: CRUD con Node.js y MySQL
 
 ## Descripción del Proyecto
+Desarrollarás una plataforma de streaming usando Node.js y MySQL. La aplicación permitirá realizar operaciones CRUD sobre una base de datos relacional basada en el archivo `trailerflix.json`.
 
-En este proyecto, desarrollarás una plataforma de streaming usando Node.js y MySQL. La aplicación permitirá realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre una base de datos relacional, utilizando el archivo trailerflix.json como referencia para diseñar el modelo de datos.
+## Tabla de Contenidos
+- [Instalación](#instalación)
+- [Uso](#uso)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Endpoints](#endpoints)
+- [Dependencias](#dependencias)
+- [Documentacion - Swagger](#documentacion)
 
-## Entrega
-Esta entrega se enfocará en diseñar y crear la base de datos para una plataforma de streaming, usando MySQL y Node.js, junto con su respectiva documentación.
+## Instalación
 
-Aprovecha lo visto en las clases para comenzar a diseñar las tablas y relaciones necesarias, las cuales deberán estar basadas en las propiedades del archivo trailerflix.json.
+1. Clonar el repositorio:
+    ```bash
+    git clone https://github.com/LucasDiPardo/Trabajo-Integrador-Relacional-Backend-Diplomatura-UNTREF.git
+    cd Trabajo-Integrador-Relacional-Backend-Diplomatura-UNTREF
+    ```
 
-## Dataset Proporcionados
+2. Instalar las dependencias:
+    ```bash
+    npm install cors express mysql2 nodemon sequelize swagger-jsdoc swagger-ui-express
 
-- **trailerflix.json**: Contiene información detallada sobre contenido de la plataforma, como películas y series. Deberás utilizar este archivo como base para diseñar el modelo de datos.
+    ```
 
-## Modelo de Base de Datos
-El archivo trailerflix.json incluye propiedades como ID, título, categorías, géneros, resumen, temporadas, reparto y enlaces a trailers. Basado en esta estructura, debes diseñar una base de datos llamada trailerflix con al menos 6 tablas relacionales. Entre ellas:
+3. Configurar la base de datos:
+    - Crear una base de datos en MySQL.
+    - Importar las tablas utilizando el archivo `SQL PARA CREAR LA BASE Y TABLAS.txt`.
 
-- **contenido**: Tabla principal con la información de películas y series.
-- **categorías**: Definirá si el contenido es una película o una serie.
-- **géneros**: Almacenará los géneros como Ciencia Ficción, Fantasía, etc.
-- **actores**: Información sobre los actores principales de cada contenido.
-- **tabla intermedia contenido-actores**: Relacionará el contenido con los actores.
-El diseño debe ser bocetado primero en papel y luego implementado en la plataforma **DB Designer** sugerida en clase. Debes generar un archivo SQL de exportación que podrás usar para crear las tablas en MySQL.
+4. Configurar las variables de entorno en un archivo `.env`:
+    ```env
+    DB_HOST=localhost
+    DB_USER=tu_usuario
+    DB_PASSWORD=tu_contraseña
+    DB_NAME=trailerflix
+    ```
 
-## Pasos a Seguir
-1. **Diseñar el modelo de datos** basado en trailerflix.json.
-2. **Implementar las tablas** en DB Designer, asegurando que haya relaciones adecuadas entre ellas.
-3. **Generar el archivo SQL** para crear las tablas en MySQL.
-4. **Migrar los datos** del archivo JSON a MySQL utilizando los insert correspondientes.
+5. Ejecutar el script para cargar los datos:
+    - Ejecutar el script `utils/scriptCargarJson.js` para cargar los datos del archivo `trailerflix.json` a la base de datos automáticamente.
+    ```bash
+    node utils/scriptCargarJson.js
+    ```
 
-## Funcionalidades del CRUD
+6. Iniciar el servidor:
+    ```bash
+    node .\app.js
+    ```
 
-1. **Obtener todos los contenidos**
-   - Endpoint que devuelve todos los contenidos de la base de datos.
-   - Control de errores para manejar la indisponibilidad de la base de datos.
+## Uso
 
-2. **Obtener un contenido por ID**
-   - Endpoint para obtener un contenido específico.
-   - Control de errores para manejar casos en que el contenido no exista.
+1. Para obtener todos los contenidos:
+    ```http
+    GET /contenido
+    ```
 
-3. **Filtrar contenidos**
-   - Endpoint para filtrar por título, género o categoría.
-   - Control de errores para manejar coincidencias no encontradas o problemas de conexión.
+2. Para obtener un contenido por ID:
+    ```http
+    GET /contenido/:id
+    ```
 
-4. **Agregar un nuevo contenido**
-   - Endpoint para agregar una nueva pelicula o serie a la base de datos.
-   - Validación de campos obligatorios.
+3. Para filtrar contenidos por título, género o categoría:
+    ```http
+    GET /contenido?titulo=algo&genero=algo&categoria=algo
+    ```
 
-5. **Actualizar un contenido:**
-   - Endpoint para actualizar información como temporadas o reparto.
-   - Control de errores para manejar actualizaciones fallidas.
-     
-6. **Eliminar un contenido**
-   - Endpoint para eliminar un contenido de la base de datos.
-   - Control de errores para manejar problemas durante el borrado.
+4. Para agregar un nuevo contenido:
+    ```http
+    POST /contenido
+    Content-Type: application/json
+    {
+      "titulo": "Nuevo Título",
+      "genero": "Género",
+      "categoria": "Categoría",
+      "resumen": "Resumen",
+      "reparto": ["Actor 1", "Actor 2"]
+    }
+    ```
 
-7. **Control de errores**
-   - Manejo de errores en la estructura de las solicitudes y respuestas.
-   - Respuesta adecuada con mensajes y códigos de error específicos.
-   - Control de acceso a rutas no existentes con respuestas apropiadas.
-  
-## Herramientas Sugeridas
-Utiliza una **I.A.** como sugerimos en clase para optimizar la inserción de los datos del JSON a la base de datos. Esto puede ayudarte a transformar el archivo *trailerflix.json* en un formato que sea más fácil de insertar en MySQL.
+5. Para actualizar un contenido:
+    ```http
+    PUT /contenido/:id
+    Content-Type: application/json
+    {
+      "titulo": "Título Actualizado"
+    }
+    ```
 
-## Fechas Importantes
+6. Para eliminar un contenido:
+    ```http
+    DELETE /contenido/:id
+    ```
 
-- **Avance del Proyecto**: 10 de octubre de 2024
-  - Tener diseñadas las tablas en DB Designer, con el archivo SQL generado y los primeros endpoints funcionando.
-
-- **Presentación Final**: 24 de octubre de 2024
-  - Proyecto completo con CRUD y toda la documentación.
-
-## Estructura del Repositorio
+## Estructura del Proyecto
 
 ```plaintext
 /controllers
@@ -89,42 +110,39 @@ Utiliza una **I.A.** como sugerimos en clase para optimizar la inserción de los
   - actor.js
 /routes/
   - contenidoRoutes.js
+/utils/
+   - scriptCargarJson.js
+   - swagger.config.js
+- app.js
+- .gitignore
+- README.md
 ```
 
-### Descripción de Archivos
+## Endpoints
 
-- **/json**: Contiene el archivo trailerflix.json con los datos de películas y series.
-- **/README.md**: Este archivo, con la descripción del proyecto.
-- **/app.js**: Archivo principal de la aplicación Node.js.
-- **/conexion/database.js**: Configuración de la conexión a MySQL.
-- **/models/**: Modelos de datos para las tablas en MySQL.
-- **/routes/**: Definición de las rutas y endpoints del CRUD.
 
-## Instrucciones de Entrega
+- GET /contenido: Obtener todos los contenidos.
+- GET /contenido/
+: Obtener un contenido específico por ID.
+- GET /contenido: Filtrar contenidos por título, género o categoría.
+- POST /contenido: Agregar un nuevo contenido.
+- PUT /contenido/
+: Actualizar un contenido existente.
+- DELETE /contenido/
+: Eliminar un contenido.
 
-1. **Fork** el repositorio desde [aquí](https://github.com/FabioDrizZt/Trabajo-Integrador-Relacional-Backend-Diplomatura-UNTREF/fork).
-2. **Clona** tu fork en tu máquina local.
-   ```bash
-   git clone https://github.com/tu-usuario/tu-repositorio-fork.git
-   ```
-3. Realiza los cambios y sube tu código a tu fork.
-4. **Sube** los cambios a tu fork.
-   ```bash
-   git add .
-   git commit -m "Descripción de los cambios"
-   git push origin main
-   ```
 
-5. Agrega a los siguientes usuarios como colaboradores en tu repositorio:
-   - [FabioDrizZt](https://github.com/FabioDrizZt)
-   - [JuanNebbia](https://github.com/JuanNebbia)
-   - [NKrein](https://github.com/NKrein)
-   - [mathiasbarbosa](https://github.com/mathiasbarbosa)
+## Dependencias
+   - cors: 2.8.5,
+   - express: 4.21.0.
+   - mysql2: 3.11.3.
+   - nodemon: 3.1.7.
+   - sequelize: 6.37.4.
+   - swagger-jsdoc: 6.2.8.
+   - swagger-ui-express: 5.0.1.
 
-## Conclusión
+## Documentacion
+Puedes probar la API y todos sus endpoints accediendo a http://127.0.0.1:3000/api-docs/
 
-Este proyecto te permitirá aplicar conceptos clave de desarrollo backend, diseño de bases de datos y documentación. ¡Adelanta los pasos y recuerda mantener tu código limpio y bien documentado!
 
----
 
-Recuerda mantener tu código limpio, documentado y seguir las buenas prácticas de desarrollo. ¡Nos vemos en clase para revisar tu progreso el 10 de octubre de 2024!
