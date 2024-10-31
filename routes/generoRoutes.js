@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const generoController = require("../controllers/generoController.js");
 
-// GET a /genero para traer todos los géneros
+// GET a /generos para traer todos los géneros
 /**
  * @swagger
- * /genero:
+ * /generos:
  *   get:
  *     summary: Obtener todos los géneros
  *     description: Endpoint para obtener una lista de todos los géneros en la base de datos.
@@ -33,10 +33,10 @@ const generoController = require("../controllers/generoController.js");
  */
 router.get("/", generoController.getAllGeneros);
 
-// GET a /genero/:id para traer un género por ID
+// GET a /generos/:id para traer un género por ID
 /**
  * @swagger
- * /genero/{id}:
+ * /generos/{id}:
  *   get:
  *     summary: Obtener un género por ID
  *     description: Endpoint para obtener un género específico de la base de datos utilizando su ID.
@@ -69,10 +69,10 @@ router.get("/", generoController.getAllGeneros);
  */
 router.get("/:id", generoController.getGeneroById);
 
-// POST a /genero/createGenero para crear un nuevo género
+// POST a /generos/createGenero para crear un nuevo género
 /**
  * @swagger
- * /genero/createGenero:
+ * /generos/createGenero:
  *   post:
  *     summary: Crear un nuevo género
  *     description: Endpoint para crear un nuevo género en la base de datos.

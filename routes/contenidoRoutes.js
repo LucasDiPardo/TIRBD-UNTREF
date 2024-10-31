@@ -121,7 +121,6 @@ router.get("/", contenidoController.getAllContenidos);
  */
 router.get("/:id", contenidoController.getContenidoById);
 
-// POST a /contenido/createContenido para crear un nuevo contenido
 /**
  * @swagger
  * /contenido/createContenido:
@@ -167,13 +166,52 @@ router.get("/:id", contenidoController.getContenidoById);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Contenido'  # Referencia al esquema Contenido
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: ID del contenido creado.
+ *                 poster:
+ *                   type: string
+ *                   description: URL del poster del contenido.
+ *                 titulo:
+ *                   type: string
+ *                   description: Título del contenido.
+ *                 resumen:
+ *                   type: string
+ *                   description: Resumen del contenido.
+ *                 temporadas:
+ *                   type: integer
+ *                   description: Número de temporadas.
+ *                 trailer:
+ *                   type: string
+ *                   description: URL del trailer del contenido.
+ *                 categoria:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                       description: Nombre de la categoría.
+ *                 genero:
+ *                   type: object
+ *                   properties:
+ *                     nombre:
+ *                       type: string
+ *                       description: Nombre del género.
+ *                 actores:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       nombre:
+ *                         type: string
+ *                         description: Nombre del actor.
  *       400:
  *         description: Solicitud incorrecta. Datos inválidos.
  *         content:
  *           application/json:
  *             example:
- *               error: "Uno o más actores no existen"
+ *               error: "El contenido ya existe" # o "Uno o más actores no existen"
  *       500:
  *         description: Error en el servidor.
  *         content:
@@ -183,10 +221,10 @@ router.get("/:id", contenidoController.getContenidoById);
  */
 router.post("/createContenido", contenidoController.createContenido);
 
-// PUT a /contenidos/updateContenido/{id} para actualizar un contenido existente
+// PUT a /contenido/{id} para actualizar un contenido existente
 /**
  * @swagger
- * /contenidos/updateContenido/{id}:
+ * /contenido/{id}:
  *   put:
  *     summary: Actualizar contenido existente
  *     description: Endpoint para actualizar un contenido existente en la base de datos.
@@ -246,10 +284,11 @@ router.post("/createContenido", contenidoController.createContenido);
  *               message: "Error al actualizar Contenido"
  */
 router.put("/:id", contenidoController.updateContenido);
-// DELETE a /contenidos/deleteContenido/{id} para eliminar un contenido existente
+
+// DELETE a /contenido/{id} para eliminar un contenido existente
 /**
  * @swagger
- * /contenidos/deleteContenido/{id}:
+ * /contenido/{id}:
  *   delete:
  *     summary: Eliminar contenido existente
  *     description: Endpoint para eliminar un contenido existente de la base de datos.

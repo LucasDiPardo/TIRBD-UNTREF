@@ -148,7 +148,7 @@ const swaggerOptions = {
       },
     },
   },
-  apis: ["./routes/*.js"], // Asegúrate de que esta ruta es correcta
+  apis: ["./routes/*.js"], 
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);

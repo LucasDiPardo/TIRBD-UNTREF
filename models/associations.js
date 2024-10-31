@@ -8,6 +8,7 @@ const { Categoria } = require("./categoria");
 Contenido.belongsToMany(Actor, {
   through: ContenidoActorView,
   foreignKey: "contenido_id",
+  onDelete: "CASCADE",
 });
 Actor.belongsToMany(Contenido, {
   through: ContenidoActorView,

@@ -124,12 +124,20 @@ const createContenido = async (req, res) => {
       actores_id,
     } = req.body;
 
-    const error = validar(req.body);
 
+    const error = validar(req.body);
     if (error) {
       await t.rollback();
       return res.status(400).json({ error });
     }
+
+
+    const contenidoExistente = await Contenido.findOne({ where: { titulo } });
+    if (contenidoExistente) {
+      await t.rollback();
+      return res.status(400).json({ error: "El contenido ya existe" });
+    }
+
 
     const nuevoContenido = await Contenido.create(
       {
@@ -143,6 +151,7 @@ const createContenido = async (req, res) => {
       },
       { transaction: t }
     );
+
 
     if (actores_id && actores_id.length > 0) {
       const actoresExistentes = await Actor.findAll({
@@ -159,6 +168,7 @@ const createContenido = async (req, res) => {
     }
 
     await t.commit();
+
 
     const contenidoCreado = await Contenido.findByPk(nuevoContenido.id, {
       include: [
