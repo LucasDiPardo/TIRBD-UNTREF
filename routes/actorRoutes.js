@@ -70,10 +70,10 @@ router.get('/', actorController.getAllActors)
  */
 router.get('/:id', actorController.getActorById)
 
-// POST a /actores para crear un nuevo actor
+// POST a /actores/createActor para crear un nuevo actor
 /**
  * @swagger
- * /actores:
+ * /actores/createActor:
  *   post:
  *     summary: Crear un nuevo actor
  *     description: Endpoint para crear un nuevo actor en la base de datos.
@@ -82,26 +82,34 @@ router.get('/:id', actorController.getActorById)
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Actor'  # Referencia al esquema Actor
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 description: Nombre del actor a crear.
+ *                 example: "Juan Pérez"
  *     responses:
  *       201:
  *         description: Actor creado exitosamente.
  *         content:
  *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Actor'  # Referencia al esquema Actor
  *             example:
- *               message: "Actor creado exitosamente"
+ *               id: 1
+ *               nombre: "Juan Pérez"
  *       400:
- *         description: Solicitud incorrecta. Datos inválidos.
+ *         description: Actor ya existe.
  *         content:
  *           application/json:
  *             example:
- *               error: "Datos inválidos proporcionados"
+ *               error: "Actor ya existe"
  *       500:
  *         description: Error en el servidor.
  *         content:
  *           application/json:
  *             example:
- *               message: "Error al crear actor"
+ *               message: "Error al crear Actor"
  */
 router.post('/createActor', actorController.createActor)
 

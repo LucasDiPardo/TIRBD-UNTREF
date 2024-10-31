@@ -2,9 +2,9 @@ const { Contenido } = require("../models/contenido");
 const { Genero } = require("../models/genero");
 const { Categoria } = require("../models/categoria");
 const { Actor } = require("../models/actor");
-const {sequelize} = require("../conexion/database");
+const { sequelize } = require("../conexion/database");
 const { Op } = require("sequelize");
-
+const { ContenidoActorView } = require("../models/contenidoActorView");
 
 const getAllContenidos = async (req, res) => {
   try {
@@ -25,7 +25,6 @@ const getAllContenidos = async (req, res) => {
   }
 };
 
-
 const getContenidoById = async (req, res) => {
   try {
     const contenidoID = req.params.id;
@@ -45,17 +44,14 @@ const getContenidoById = async (req, res) => {
   }
 };
 
-
 const buscarContenido = async (req, res) => {
   try {
     const { titulo, genero, categoria } = req.query;
 
-    // Crear objeto de filtro dinámico
     const whereContenido = {};
     const whereGenero = {};
     const whereCategoria = {};
 
-    // Agregar filtros solo si están presentes
     if (titulo) {
       whereContenido.titulo = { [Op.like]: `%${titulo}%` };
     }
@@ -68,7 +64,6 @@ const buscarContenido = async (req, res) => {
       whereCategoria.nombre = { [Op.like]: `%${categoria}%` };
     }
 
-    // Buscar contenidos con los filtros aplicados
     const contenidos = await Contenido.findAll({
       where: whereContenido,
       include: [
@@ -116,7 +111,7 @@ function validar(datos) {
 }
 
 const createContenido = async (req, res) => {
-  const t = await sequelize.transaction(); // Iniciar una transacción
+  const t = await sequelize.transaction();
   try {
     const {
       poster,
@@ -149,7 +144,6 @@ const createContenido = async (req, res) => {
       { transaction: t }
     );
 
-
     if (actores_id && actores_id.length > 0) {
       const actoresExistentes = await Actor.findAll({
         where: { id: actores_id },
@@ -157,16 +151,15 @@ const createContenido = async (req, res) => {
       });
 
       if (actoresExistentes.length !== actores_id.length) {
-        await t.rollback(); 
+        await t.rollback();
         return res.status(400).json({ error: "Uno o más actores no existen" });
       }
 
       await nuevoContenido.addActors(actoresExistentes, { transaction: t });
     }
 
-    await t.commit(); 
+    await t.commit();
 
-    
     const contenidoCreado = await Contenido.findByPk(nuevoContenido.id, {
       include: [
         { model: Genero, attributes: ["nombre"] },
@@ -177,12 +170,11 @@ const createContenido = async (req, res) => {
 
     res.status(201).json(contenidoCreado);
   } catch (error) {
-    await t.rollback(); 
+    await t.rollback();
     console.error(error);
     res.status(500).json({ message: "Error al crear Contenido" });
   }
 };
-
 
 const updateContenido = async (req, res) => {
   try {
@@ -232,13 +224,22 @@ const updateContenido = async (req, res) => {
 
 
 const deleteContenido = async (req, res) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    const deleted = await Contenido.destroy({
-      where: { id },
+    const result = await sequelize.transaction(async (t) => {
+    await ContenidoActorView.destroy({
+      where: { contenido_id: id },
+      transaction: t,
     });
 
-    if (deleted) {
+    const deleted = await Contenido.destroy({
+      where: { id },
+      transaction: t,
+    });
+    
+    return deleted;
+  });
+    if (result) {
       res
         .status(200)
         .json({ message: "Contenido eliminado satisfactoriamente." });

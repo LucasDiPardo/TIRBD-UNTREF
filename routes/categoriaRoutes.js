@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const categoriaController = require("../controllers/categoriaController.js");
 
-// GET a /categoria para traer todas las categorias
+// GET a /categorias para traer todas las categorias
 /**
  * @swagger
- * /categoria:
+ * /categorias:
  *   get:
  *     summary: Obtener todas las categorías
  *     description: Endpoint para obtener una lista de todas las categorías en la base de datos.
@@ -33,10 +33,10 @@ const categoriaController = require("../controllers/categoriaController.js");
  */
 router.get("/", categoriaController.getAllCategories);
 
-// GET a /categoria/:id para traer una categoría por ID
+// GET a /categorias/:id para traer una categoría por ID
 /**
  * @swagger
- * /categoria/{id}:
+ * /categorias/{id}:
  *   get:
  *     summary: Obtener una categoría por ID
  *     description: Endpoint para obtener una categoría específica de la base de datos utilizando su ID.
@@ -69,10 +69,10 @@ router.get("/", categoriaController.getAllCategories);
  */
 router.get("/:id", categoriaController.getCategoriaById);
 
-// GET a /categoria/buscarCategoria/:nombre para buscar una categoría por nombre
+// GET a /categorias/buscarCategoria/:nombre para buscar una categoría por nombre
 /**
  * @swagger
- * /categoria/buscarCategoria/{nombre}:
+ * /categorias/buscarCategoria/{nombre}:
  *   get:
  *     summary: Buscar una categoría por nombre
  *     description: Endpoint para buscar una categoría específica de la base de datos utilizando su nombre.
@@ -105,10 +105,10 @@ router.get("/:id", categoriaController.getCategoriaById);
  */
 router.get("/buscarCategoria/:nombre", categoriaController.buscarCategoria);
 
-// POST a /categoria para crear una nueva categoría
+// POST a /categorias/createCategoria para crear una nueva categoría
 /**
  * @swagger
- * /categoria:
+ * /categorias/createCategoria:
  *   post:
  *     summary: Crear una nueva categoría
  *     description: Endpoint para crear una nueva categoría en la base de datos.
@@ -117,26 +117,34 @@ router.get("/buscarCategoria/:nombre", categoriaController.buscarCategoria);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Categoria'  # Referencia al esquema Categoria
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 description: Nombre de la categoría a crear.
+ *                 example: "Acción"
  *     responses:
  *       201:
  *         description: Categoría creada exitosamente.
  *         content:
  *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Categoria'  # Referencia al esquema Categoria
  *             example:
- *               message: "Categoría creada exitosamente"
+ *               id: 1
+ *               nombre: "Acción"
  *       400:
- *         description: Solicitud incorrecta. Datos inválidos.
+ *         description: Categoría ya existe.
  *         content:
  *           application/json:
  *             example:
- *               error: "Datos inválidos proporcionados"
+ *               error: "Categoria ya existe"
  *       500:
  *         description: Error en el servidor.
  *         content:
  *           application/json:
  *             example:
- *               message: "Error al crear categoría"
+ *               message: "Error al crear Categoria"
  */
 router.post("/createCategoria", categoriaController.createCategoria);
 

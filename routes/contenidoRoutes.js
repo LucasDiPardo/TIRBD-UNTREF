@@ -5,7 +5,7 @@ const contenidoController = require("../controllers/contenidoController");
 // GET a /buscarContenido para buscar contenidos con filtros dinámicos
 /**
  * @swagger
- * /buscarContenido:
+ * /contenido/buscarContenido:
  *   get:
  *     summary: Buscar contenidos con filtros dinámicos
  *     description: Endpoint para buscar contenidos en la base de datos utilizando filtros dinámicos como título, género y/o categoría.
@@ -36,7 +36,7 @@ const contenidoController = require("../controllers/contenidoController");
  *               schema:
  *                 type: array
  *                 items:
- *                   $ref: '#/components/schemas/Contenido'  # Referencia al esquema Contenido definido en swagger.config.js
+ *                   $ref: '#/components/schemas/Contenido'
  *       404:
  *         description: No se encontraron contenidos que coincidan con los filtros.
  *         content:
@@ -54,10 +54,10 @@ router.get("/buscarContenido", contenidoController.buscarContenido);
 
 
 
-// GET a / para traer todos los contenidos
+// GET a /contenido para traer todos los contenidos
 /**
  * @swagger
- * /:
+ * /contenido:
  *   get:
  *     summary: Obtener todos los contenidos
  *     description: Endpoint para obtener una lista de todos los contenidos en la base de datos.
@@ -85,10 +85,10 @@ router.get("/buscarContenido", contenidoController.buscarContenido);
  */
 router.get("/", contenidoController.getAllContenidos);
 
-// GET a /:id para traer un contenido por ID
+// GET a /contenido/:id para traer un contenido por ID
 /**
  * @swagger
- * /{id}:
+ * /contenido/{id}:
  *   get:
  *     summary: Obtener un contenido por ID
  *     description: Endpoint para obtener un contenido específico de la base de datos utilizando su ID.
@@ -121,51 +121,78 @@ router.get("/", contenidoController.getAllContenidos);
  */
 router.get("/:id", contenidoController.getContenidoById);
 
-// POST a /createContenido para crear un nuevo contenido
+// POST a /contenido/createContenido para crear un nuevo contenido
 /**
  * @swagger
- * /createContenido:
+ * /contenido/createContenido:
  *   post:
- *     summary: Crear un nuevo contenido
+ *     summary: Crear nuevo contenido
  *     description: Endpoint para crear un nuevo contenido en la base de datos.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Contenido'  # Referencia al esquema Contenido
+ *             type: object
+ *             properties:
+ *               poster:
+ *                 type: string
+ *                 description: URL del poster del contenido.
+ *               titulo:
+ *                 type: string
+ *                 description: Título del contenido.
+ *               resumen:
+ *                 type: string
+ *                 description: Resumen del contenido.
+ *               temporadas:
+ *                 type: integer
+ *                 description: Número de temporadas (si aplica).
+ *               trailer:
+ *                 type: string
+ *                 description: URL del trailer del contenido.
+ *               categoria_id:
+ *                 type: integer
+ *                 description: ID de la categoría del contenido.
+ *               genero_id:
+ *                 type: integer
+ *                 description: ID del género del contenido.
+ *               actores_id:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 description: Lista de IDs de actores asociados al contenido.
  *     responses:
  *       201:
  *         description: Contenido creado exitosamente.
  *         content:
  *           application/json:
- *             example:
- *               message: "Contenido creado exitosamente"
+ *             schema:
+ *               $ref: '#/components/schemas/Contenido'  # Referencia al esquema Contenido
  *       400:
  *         description: Solicitud incorrecta. Datos inválidos.
  *         content:
  *           application/json:
  *             example:
- *               error: "Datos inválidos proporcionados"
+ *               error: "Uno o más actores no existen"
  *       500:
  *         description: Error en el servidor.
  *         content:
  *           application/json:
  *             example:
- *               message: "Error al crear contenido"
+ *               message: "Error al crear Contenido"
  */
 router.post("/createContenido", contenidoController.createContenido);
 
-// PUT a /:id para actualizar un contenido existente
+// PUT a /contenidos/updateContenido/{id} para actualizar un contenido existente
 /**
  * @swagger
- * /{id}:
+ * /contenidos/updateContenido/{id}:
  *   put:
- *     summary: Actualizar un contenido existente
- *     description: Endpoint para actualizar un contenido específico en la base de datos utilizando su ID.
+ *     summary: Actualizar contenido existente
+ *     description: Endpoint para actualizar un contenido existente en la base de datos.
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
  *         description: ID del contenido a actualizar.
  *         schema:
@@ -175,20 +202,36 @@ router.post("/createContenido", contenidoController.createContenido);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Contenido'  # Referencia al esquema Contenido
+ *             type: object
+ *             properties:
+ *               poster:
+ *                 type: string
+ *                 description: URL del poster del contenido.
+ *               titulo:
+ *                 type: string
+ *                 description: Título del contenido.
+ *               resumen:
+ *                 type: string
+ *                 description: Resumen del contenido.
+ *               temporadas:
+ *                 type: integer
+ *                 description: Número de temporadas (si aplica).
+ *               trailer:
+ *                 type: string
+ *                 description: URL del trailer del contenido.
+ *               categoria_id:
+ *                 type: integer
+ *                 description: ID de la categoría del contenido.
+ *               genero_id:
+ *                 type: integer
+ *                 description: ID del género del contenido.
  *     responses:
  *       200:
  *         description: Contenido actualizado exitosamente.
  *         content:
  *           application/json:
- *             example:
- *               message: "Contenido actualizado exitosamente"
- *       400:
- *         description: Solicitud incorrecta. Datos inválidos.
- *         content:
- *           application/json:
- *             example:
- *               error: "Datos inválidos proporcionados"
+ *             schema:
+ *               $ref: '#/components/schemas/Contenido'  # Referencia al esquema Contenido
  *       404:
  *         description: Contenido no encontrado.
  *         content:
@@ -200,31 +243,30 @@ router.post("/createContenido", contenidoController.createContenido);
  *         content:
  *           application/json:
  *             example:
- *               message: "Error al actualizar contenido"
+ *               message: "Error al actualizar Contenido"
  */
 router.put("/:id", contenidoController.updateContenido);
-
-// DELETE a /:id para eliminar un contenido
+// DELETE a /contenidos/deleteContenido/{id} para eliminar un contenido existente
 /**
  * @swagger
- * /{id}:
+ * /contenidos/deleteContenido/{id}:
  *   delete:
- *     summary: Eliminar un contenido
- *     description: Endpoint para eliminar un contenido específico de la base de datos utilizando su ID.
+ *     summary: Eliminar contenido existente
+ *     description: Endpoint para eliminar un contenido existente de la base de datos.
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
  *         description: ID del contenido a eliminar.
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Contenido eliminado exitosamente.
+ *         description: Contenido eliminado satisfactoriamente.
  *         content:
  *           application/json:
  *             example:
- *               message: "Contenido eliminado exitosamente"
+ *               message: "Contenido eliminado satisfactoriamente."
  *       404:
  *         description: Contenido no encontrado.
  *         content:
@@ -236,7 +278,7 @@ router.put("/:id", contenidoController.updateContenido);
  *         content:
  *           application/json:
  *             example:
- *               message: "Error al eliminar contenido"
+ *               message: "Error al eliminar Contenido"
  */
 router.delete("/:id", contenidoController.deleteContenido);
 

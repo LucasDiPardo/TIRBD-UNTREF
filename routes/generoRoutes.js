@@ -69,10 +69,10 @@ router.get("/", generoController.getAllGeneros);
  */
 router.get("/:id", generoController.getGeneroById);
 
-// POST a /genero para crear un nuevo género
+// POST a /genero/createGenero para crear un nuevo género
 /**
  * @swagger
- * /genero:
+ * /genero/createGenero:
  *   post:
  *     summary: Crear un nuevo género
  *     description: Endpoint para crear un nuevo género en la base de datos.
