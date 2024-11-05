@@ -77,7 +77,9 @@ const buscarContenido = async (req, res) => {
           where: whereCategoria,
           attributes: ["nombre"],
         },
-        { model: Actor, attributes: ["nombre"], through: { attributes: [] } },
+        { model: Actor, 
+          attributes: ["nombre"], 
+          through: { attributes: [] } },
       ],
     });
 

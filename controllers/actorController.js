@@ -8,7 +8,8 @@ const getAllActors = async(req, res) => {
     await Actor.sync()
     
     const actores = await Actor.findAll()
-    actores.length > 0 ? res.status(200).json(actores)
+    actores.length > 0 
+        ? res.status(200).json(actores)
         : res.status(404).json({error: "No encontramos actores cargados"})
   }catch(error){
     console.log(error)
