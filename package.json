@@ -4,9 +4,7 @@
   "description": "En este proyecto, desarrollarás una plataforma de streaming usando Node.js y MySQL. La aplicación permitirá realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre una base de datos relacional, utilizando el archivo trailerflix.json como referencia para diseñar el modelo de datos.",
   "main": "app.js",
   "scripts":{
-    "start": "cross-env NODE_ENV=production node app.js",
-    "start:local": "cross-env NODE_ENV=local node app.js",
-    "start:railway": "cross-env NODE_ENV=local_railway node app.js"
+    "start": "cross-env NODE_ENV=production node app.js"
   },
   "keywords": [],
   "author": "",
