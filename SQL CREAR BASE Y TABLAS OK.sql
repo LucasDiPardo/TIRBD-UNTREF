@@ -3,32 +3,32 @@ CREATE DATABASE IF NOT EXISTS trailerflix;
 USE trailerflix;
 
 -- Eliminar tablas si existen
-DROP TABLE IF EXISTS Contenido_Actor;
-DROP TABLE IF EXISTS Contenido;
-DROP TABLE IF EXISTS Actores;
-DROP TABLE IF EXISTS Generos;
-DROP TABLE IF EXISTS Categorias;
+DROP TABLE IF EXISTS contenido_actor;
+DROP TABLE IF EXISTS contenido;
+DROP TABLE IF EXISTS actores;
+DROP TABLE IF EXISTS generos;
+DROP TABLE IF EXISTS categorias;
 
 -- Crear la tabla de categorías
-CREATE TABLE Categorias (
+CREATE TABLE categorias (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL
 );
 
 -- Crear la tabla de géneros
-CREATE TABLE Generos (
+CREATE TABLE generos (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL
 );
 
 -- Crear la tabla de actores
-CREATE TABLE Actores (
+CREATE TABLE actores (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL
 );
 
 -- Crear la tabla de contenido
-CREATE TABLE Contenido (
+CREATE TABLE contenido (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     poster VARCHAR(255) NOT NULL,
     titulo VARCHAR(255) NOT NULL,
@@ -37,26 +37,26 @@ CREATE TABLE Contenido (
     trailer VARCHAR(255) NOT NULL,
     categoria_id BIGINT UNSIGNED NOT NULL,
     genero_id BIGINT UNSIGNED NOT NULL,
-    FOREIGN KEY (categoria_id) REFERENCES Categorias(id),
-    FOREIGN KEY (genero_id) REFERENCES Generos(id)
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id),
+    FOREIGN KEY (genero_id) REFERENCES generos(id)
 );
 
 -- Crear la tabla de relación contenido-actor
-CREATE TABLE Contenido_Actor (
+CREATE TABLE contenido_actor (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     actor_id BIGINT UNSIGNED NOT NULL,
     contenido_id BIGINT UNSIGNED NOT NULL,
-    FOREIGN KEY (actor_id) REFERENCES Actores(id),
-    FOREIGN KEY (contenido_id) REFERENCES Contenido(id)
+    FOREIGN KEY (actor_id) REFERENCES actores(id),
+    FOREIGN KEY (contenido_id) REFERENCES contenido(id)
 );
 
 -- Crear índices para optimizar las consultas
-ALTER TABLE Contenido_Actor ADD INDEX contenido_actor_actor_id_index (actor_id);
-ALTER TABLE Contenido_Actor ADD INDEX contenido_actor_contenido_id_index (contenido_id);
-ALTER TABLE Contenido ADD INDEX contenido_categoria_id_index (categoria_id);
-ALTER TABLE Contenido ADD INDEX contenido_genero_id_index (genero_id);
+ALTER TABLE contenido_actor ADD INDEX contenido_actor_actor_id_index (actor_id);
+ALTER TABLE contenido_actor ADD INDEX contenido_actor_contenido_id_index (contenido_id);
+ALTER TABLE contenido ADD INDEX contenido_categoria_id_index (categoria_id);
+ALTER TABLE contenido ADD INDEX contenido_genero_id_index (genero_id);
 
 -- Asegurarse de que las tablas de categorías y géneros tienen índices en los campos de nombre
-ALTER TABLE Categorias ADD INDEX categorias_nombre_index (nombre);
-ALTER TABLE Generos ADD INDEX generos_nombre_index (nombre);
-ALTER TABLE Actores ADD INDEX actores_nombre_index (nombre);
+ALTER TABLE categorias ADD INDEX categorias_nombre_index (nombre);
+ALTER TABLE generos ADD INDEX generos_nombre_index (nombre);
+ALTER TABLE actores ADD INDEX actores_nombre_index (nombre);

@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 require("./models/associations");
 const { sequelize } = require("./conexion/database");
@@ -26,18 +28,14 @@ app.use(async (req, res, next) => {
   }
 });
 
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-
 app.use(express.json());
-
 
 app.use("/contenido", contenidoRoutes);
 app.use("/categorias", categoriaRoutes);
 app.use("/generos", generoRoutes);
 app.use("/actores", actorRoutes);
-
 
 app.get("/", (req, res) => {
   res.status(200).send("¡Bienvenido a la API de Series y Peliculas!");
@@ -48,7 +46,6 @@ app.use((req, res) => {
 });
 
 app.set("db", sequelize);
-
 
 const PORT = process.env.PORT || 3000;
 sequelize
