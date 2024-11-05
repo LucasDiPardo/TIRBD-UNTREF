@@ -7,11 +7,13 @@ const swaggerOptions = {
     info: {
       title: "API de Contenidos",
       version: "1.0.0",
-      description: "Documentación generada con Swagger para la API de Series y Peliculas",
+      description:
+        "Documentación generada con Swagger para la API de Series y Peliculas",
     },
     servers: [
       {
         url: "http://localhost:3000",
+        url: "https://tirbd-untref-production.up.railway.app",
       },
     ],
     components: {
@@ -110,9 +112,9 @@ const swaggerOptions = {
             actores: {
               type: "array",
               items: {
-                $ref: "#/components/schemas/Actor"
-              }
-            }
+                $ref: "#/components/schemas/Actor",
+              },
+            },
           },
           required: [
             "poster",
@@ -148,7 +150,7 @@ const swaggerOptions = {
       },
     },
   },
-  apis: ["./routes/*.js"], 
+  apis: ["./routes/*.js"],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
