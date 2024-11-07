@@ -47,6 +47,7 @@ app.use((req, res) => {
 
 app.set("db", sequelize);
 
+
 const PORT = process.env.PORT || 3000;
 sequelize
   .sync({ force: false })
