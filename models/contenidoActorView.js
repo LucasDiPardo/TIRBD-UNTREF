@@ -28,7 +28,7 @@ const ContenidoActorView = sequelize.define(
     },
   },
   {
-    tableName: "contenido_actor",
+    tableName: "Contenido_Actor",
     timestamps: false,
   }
 );
